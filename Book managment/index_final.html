@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookVault - Advanced Book Management System</title>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 BookVault</h1>
+            <p>Your Personal Library Management System</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalBooks">0</div>
+                <div class="stat-label">Total Books</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="readingBooks">0</div>
+                <div class="stat-label">Currently Reading</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedBooks">0</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="wishlistBooks">0</div>
+                <div class="stat-label">Wishlist</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <h2 class="section-title">Add New Book</h2>
+                <form id="bookForm">
+                    <div class="form-group">
+                        <label for="isbn">ISBN</label>
+                        <input type="text" id="isbn" placeholder="978-0-123456-78-9">
+                    </div>
+                    <div class="form-group">
+                        <label for="pages">Pages</label>
+                        <input type="number" id="pages" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="publishYear">Publication Year</label>
+                        <input type="number" id="publishYear" min="1000" max="2025">
+                    </div>
+                    <div class="form-group">
+                        <label for="publisher">Publisher</label>
+                        <input type="text" id="publisher">
+                    </div>
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <select id="language">
+                            <option value="">Select Language</option>
+                            <option value="English">English</option>
+                            <option value="Spanish">Spanish</option>
+                            <option value="French">French</option>
+                            <option value="German">German</option>
+                            <option value="Italian">Italian</option>
+                            <option value="Portuguese">Portuguese</option>
+                            <option value="Chinese">Chinese</option>
+                            <option value="Japanese">Japanese</option>
+                            <option value="Korean">Korean</option>
+                            <option value="Arabic">Arabic</option>
+                            <option value="Russian">Russian</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Reading Status</label>
+                        <select id="status">
+                            <option value="wishlist">Wishlist</option>
+                            <option value="reading">Currently Reading</option>
+                            <option value="completed">Completed</option>
+                            <option value="paused">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="rating">Rating (1-5)</label>
+                        <select id="rating">
+                            <option value="">No Rating</option>
+                            <option value="1">⭐ 1 Star</option>
+                            <option value="2">⭐⭐ 2 Stars</option>
+                            <option value="3">⭐⭐⭐ 3 Stars</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tags">Tags (comma-separated)</label>
+                        <input type="text" id="tags" placeholder="adventure, classic, must-read">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description/Notes</label>
+                        <textarea id="description" placeholder="Brief description, personal notes, or review..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <span>📖 Add Book to Library</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="main-panel">
+                <div class="panel-header">
+                    <h2 class="section-title">My Library Collection</h2>
+                    <div class="view-controls">
+                        <button class="btn btn-secondary" onclick="bookManager.exportData()">
+                            💾 Export Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="bookManager.showImportModal()">
+                            📥 Import Data
+                        </button>
+                    </div>
+                </div>
+
+                <div class="search-filters">
+                    <div class="form-group search-group">
+                        <input type="text" id="searchInput" placeholder="🔍 Search books by title, author, or description...">
+                    </div>
+                    <div class="form-group">
+                        <select id="genreFilter">
+                            <option value="">All Genres</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Science Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Biography">Biography</option>
+                            <option value="History">History</option>
+                            <option value="Self-Help">Self-Help</option>
+                            <option value="Business">Business</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Philosophy">Philosophy</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                            <option value="wishlist">Wishlist</option>
+                            <option value="reading">Reading</option>
+                            <option value="completed">Completed</option>
+                            <option value="paused">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="sortBy">
+                            <option value="dateAdded">Date Added</option>
+                            <option value="title">Title A-Z</option>
+                            <option value="author">Author A-Z</option>
+                            <option value="rating">Rating</option>
+                            <option value="pages">Pages</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-outline" onclick="bookManager.clearFilters()">
+                        🗑️ Clear
+                    </button>
+                </div>
+
+                <div id="booksContainer" class="books-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Book Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Edit Book Details</h3>
+                <button class="close-btn" onclick="bookManager.closeEditModal()">&times;</button>
+            </div>
+            <form id="editBookForm">
+                <input type="hidden" id="editBookId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTitle">Book Title *</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAuthor">Author *</label>
+                        <input type="text" id="editAuthor" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editGenre">Genre</label>
+                        <select id="editGenre">
+                            <option value="">Select Genre</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Science Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Biography">Biography</option>
+                            <option value="History">History</option>
+                            <option value="Self-Help">Self-Help</option>
+                            <option value="Business">Business</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Philosophy">Philosophy</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Reading Status</label>
+                        <select id="editStatus">
+                            <option value="wishlist">Wishlist</option>
+                            <option value="reading">Currently Reading</option>
+                            <option value="completed">Completed</option>
+                            <option value="paused">On Hold</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editRating">Rating (1-5)</label>
+                        <select id="editRating">
+                            <option value="">No Rating</option>
+                            <option value="1">⭐ 1 Star</option>
+                            <option value="2">⭐⭐ 2 Stars</option>
+                            <option value="3">⭐⭐⭐ 3 Stars</option>
+                            <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPages">Pages</label>
+                        <input type="number" id="editPages" min="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="editTags">Tags (comma-separated)</label>
+                    <input type="text" id="editTags">
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description/Notes</label>
+                    <textarea id="editDescription"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn btn-success">✅ Update Book</button>
+                    <button type="button" class="btn btn-secondary" onclick="bookManager.closeEditModal()">❌ Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📥 Import Book Data</h3>
+                <button class="close-btn" onclick="bookManager.closeImportModal()">&times;</button>
+            </div>
+            <div class="import-content">
+                <p>Paste your exported JSON data below to import books:</p>
+                <textarea id="importData" rows="10" placeholder="Paste JSON data here..."></textarea>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="bookManager.importData()">📥 Import Books</button>
+                    <button class="btn btn-secondary" onclick="bookManager.closeImportModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Advanced Book Management System
+         * A comprehensive library management application with modern features
+         */
+
+        class BookManager {
+            constructor() {
+                this.books = this.loadBooks();
+                this.currentEditId = null;
+                this.sortOrder = 'desc';
+                this.currentFilters = {
+                    search: '',
+                    genre: '',
+                    status: '',
+                    sortBy: 'dateAdded'
+                };
+                this.init();
+            }
+
+            /**
+             * Initialize the application
+             */
+            init() {
+                this.bindEvents();
+                this.displayBooks();
+                this.updateStats();
+                this.showWelcomeMessage();
+            }
+
+            /**
+             * Bind all event listeners
+             */
+            bindEvents() {
+                // Form submissions
+                document.getElementById('bookForm').addEventListener('submit', (e) => this.addBook(e));
+                document.getElementById('editBookForm').addEventListener('submit', (e) => this.updateBook(e));
+                
+                // Search and filters
+                document.getElementById('searchInput').addEventListener('input', debounce(() => this.filterBooks(), 300));
+                document.getElementById('genreFilter').addEventListener('change', () => this.filterBooks());
+                document.getElementById('statusFilter').addEventListener('change', () => this.filterBooks());
+                document.getElementById('sortBy').addEventListener('change', () => this.filterBooks());
+                
+                // Modal events
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        this.closeEditModal();
+                        this.closeImportModal();
+                    }
+                });
+                
+                // Click outside modal to close
+                document.getElementById('editModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'editModal') {
+                        this.closeEditModal();
+                    }
+                });
+                
+                document.getElementById('importModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'importModal') {
+                        this.closeImportModal();
+                    }
+                });
+            }
+
+            /**
+             * Generate unique ID for books
+             */
+            generateId() {
+                return 'book_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+            }
+
+            /**
+             * Add new book to the library
+             */
+            addBook(e) {
+                e.preventDefault();
+                
+                try {
+                    const formData = this.getFormData('bookForm');
+                    
+                    // Validate required fields
+                    if (!formData.title.trim() || !formData.author.trim()) {
+                        this.showNotification('Please fill in all required fields!', 'error');
+                        return;
+                    }
+                    
+                    // Check for duplicate books
+                    const isDuplicate = this.books.some(book => 
+                        book.title.toLowerCase() === formData.title.toLowerCase() && 
+                        book.author.toLowerCase() === formData.author.toLowerCase()
+                    );
+                    
+                    if (isDuplicate) {
+                        if (!confirm('A book with this title and author already exists. Add anyway?')) {
+                            return;
+                        }
+                    }
+                    
+                    const book = {
+                        id: this.generateId(),
+                        ...formData,
+                        tags: this.parseTags(formData.tags),
+                        dateAdded: new Date().toISOString(),
+                        lastModified: new Date().toISOString()
+                    };
+
+                    this.books.unshift(book); // Add to beginning for recent first
+                    this.saveBooks();
+                    this.displayBooks();
+                    this.updateStats();
+                    this.resetForm('bookForm');
+                    
+                    this.showNotification(`📚 "${book.title}" added to your library!`, 'success');
+                    
+                    // Scroll to top of books list
+                    document.getElementById('booksContainer').scrollIntoView({ behavior: 'smooth' });
+                    
+                } catch (error) {
+                    console.error('Error adding book:', error);
+                    this.showNotification('Error adding book. Please try again.', 'error');
+                }
+            }
+
+            /**
+             * Get form data as object
+             */
+            getFormData(formId) {
+                const form = document.getElementById(formId);
+                const formData = new FormData(form);
+                const data = {};
+                
+                // Get all form elements
+                const inputs = form.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    let value = input.value.trim();
+                    
+                    // Convert numbers
+                    if (input.type === 'number') {
+                        value = value ? parseInt(value) : null;
+                    }
+                    
+                    data[input.id.replace('edit', '').toLowerCase()] = value || null;
+                });
+                
+                return data;
+            }
+
+            /**
+             * Parse tags from comma-separated string
+             */
+            parseTags(tagString) {
+                if (!tagString) return [];
+                return tagString.split(',')
+                    .map(tag => tag.trim())
+                    .filter(tag => tag.length > 0)
+                    .slice(0, 10); // Limit to 10 tags
+            }
+
+            /**
+             * Edit book - populate modal with book data
+             */
+            editBook(id) {
+                const book = this.books.find(b => b.id === id);
+                if (!book) {
+                    this.showNotification('Book not found!', 'error');
+                    return;
+                }
+
+                this.currentEditId = id;
+                
+                // Populate form fields
+                document.getElementById('editBookId').value = id;
+                document.getElementById('editTitle').value = book.title || '';
+                document.getElementById('editAuthor').value = book.author || '';
+                document.getElementById('editGenre').value = book.genre || '';
+                document.getElementById('editStatus').value = book.status || 'wishlist';
+                document.getElementById('editRating').value = book.rating || '';
+                document.getElementById('editPages').value = book.pages || '';
+                document.getElementById('editTags').value = Array.isArray(book.tags) ? book.tags.join(', ') : '';
+                document.getElementById('editDescription').value = book.description || '';
+                
+                // Show modal with animation
+                const modal = document.getElementById('editModal');
+                modal.style.display = 'block';
+                setTimeout(() => modal.classList.add('show'), 10);
+                
+                // Focus first input
+                document.getElementById('editTitle').focus();
+            }
+
+            /**
+             * Update existing book
+             */
+            updateBook(e) {
+                e.preventDefault();
+                
+                try {
+                    const id = this.currentEditId;
+                    const bookIndex = this.books.findIndex(b => b.id === id);
+                    
+                    if (bookIndex === -1) {
+                        this.showNotification('Book not found!', 'error');
+                        return;
+                    }
+                    
+                    const formData = this.getFormData('editBookForm');
+                    
+                    // Validate required fields
+                    if (!formData.title.trim() || !formData.author.trim()) {
+                        this.showNotification('Please fill in all required fields!', 'error');
+                        return;
+                    }
+                    
+                    // Update book data
+                    this.books[bookIndex] = {
+                        ...this.books[bookIndex],
+                        title: formData.title,
+                        author: formData.author,
+                        genre: formData.genre,
+                        status: formData.status,
+                        rating: formData.rating,
+                        pages: formData.pages,
+                        tags: this.parseTags(formData.tags),
+                        description: formData.description,
+                        lastModified: new Date().toISOString()
+                    };
+
+                    this.saveBooks();
+                    this.displayBooks();
+                    this.updateStats();
+                    this.closeEditModal();
+                    
+                    this.showNotification(`✅ "${formData.title}" updated successfully!`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error updating book:', error);
+                    this.showNotification('Error updating book. Please try again.', 'error');
+                }
+            }
+
+            /**
+             * Delete book with confirmation
+             */
+            deleteBook(id) {
+                const book = this.books.find(b => b.id === id);
+                if (!book) {
+                    this.showNotification('Book not found!', 'error');
+                    return;
+                }
+                
+                const confirmMessage = `Are you sure you want to delete "${book.title}" by ${book.author}?\n\nThis action cannot be undone.`;
+                
+                if (confirm(confirmMessage)) {
+                    this.books = this.books.filter(b => b.id !== id);
+                    this.saveBooks();
+                    this.displayBooks();
+                    this.updateStats();
+                    this.showNotification(`🗑️ "${book.title}" deleted from library`, 'info');
+                }
+            }
+
+            /**
+             * Toggle book status in cycle
+             */
+            toggleStatus(id) {
+                const book = this.books.find(b => b.id === id);
+                if (!book) return;
+
+                const statusCycle = {
+                    'wishlist': 'reading',
+                    'reading': 'completed',
+                    'completed': 'reading',
+                    'paused': 'reading'
+                };
+
+                const oldStatus = book.status;
+                book.status = statusCycle[book.status] || 'reading';
+                book.lastModified = new Date().toISOString();
+                
+                // Add completion date if marked as completed
+                if (book.status === 'completed' && oldStatus !== 'completed') {
+                    book.completedDate = new Date().toISOString();
+                }
+                
+                this.saveBooks();
+                this.displayBooks();
+                this.updateStats();
+                
+                const statusEmojis = {
+                    'wishlist': '🔖',
+                    'reading': '📖',
+                    'completed': '✅',
+                    'paused': '⏸️'
+                };
+                
+                this.showNotification(
+                    `${statusEmojis[book.status]} "${book.title}" marked as ${book.status}!`, 
+                    'success'
+                );
+            }
+
+            /**
+             * Filter and sort books based on current criteria
+             */
+            filterBooks() {
+                // Update current filters
+                this.currentFilters = {
+                    search: document.getElementById('searchInput').value.toLowerCase(),
+                    genre: document.getElementById('genreFilter').value,
+                    status: document.getElementById('statusFilter').value,
+                    sortBy: document.getElementById('sortBy').value
+                };
+
+                let filteredBooks = this.books.filter(book => {
+                    // Search filter
+                    const matchesSearch = !this.currentFilters.search || 
+                        book.title.toLowerCase().includes(this.currentFilters.search) ||
+                        book.author.toLowerCase().includes(this.currentFilters.search) ||
+                        (book.description && book.description.toLowerCase().includes(this.currentFilters.search)) ||
+                        (book.tags && book.tags.some(tag => tag.toLowerCase().includes(this.currentFilters.search)));
+                    
+                    // Genre filter
+                    const matchesGenre = !this.currentFilters.genre || book.genre === this.currentFilters.genre;
+                    
+                    // Status filter
+                    const matchesStatus = !this.currentFilters.status || book.status === this.currentFilters.status;
+
+                    return matchesSearch && matchesGenre && matchesStatus;
+                });
+
+                // Sort books
+                filteredBooks = this.sortBooks(filteredBooks, this.currentFilters.sortBy);
+
+                this.displayBooks(filteredBooks);
+            }
+
+            /**
+             * Sort books by specified criteria
+             */
+            sortBooks(books, sortBy) {
+                return books.sort((a, b) => {
+                    let aVal, bVal;
+                    
+                    switch (sortBy) {
+                        case 'title':
+                            aVal = a.title.toLowerCase();
+                            bVal = b.title.toLowerCase();
+                            return aVal.localeCompare(bVal);
+                            
+                        case 'author':
+                            aVal = a.author.toLowerCase();
+                            bVal = b.author.toLowerCase();
+                            return aVal.localeCompare(bVal);
+                            
+                        case 'rating':
+                            aVal = a.rating || 0;
+                            bVal = b.rating || 0;
+                            return bVal - aVal; // Higher ratings first
+                            
+                        case 'pages':
+                            aVal = a.pages || 0;
+                            bVal = b.pages || 0;
+                            return bVal - aVal; // More pages first
+                            
+                        case 'dateAdded':
+                        default:
+                            aVal = new Date(a.dateAdded);
+                            bVal = new Date(b.dateAdded);
+                            return bVal - aVal; // Newest first
+                    }
+                });
+            }
+
+            /**
+             * Display books in the grid
+             */
+            displayBooks(booksToShow = this.books) {
+                const container = document.getElementById('booksContainer');
+                
+                if (booksToShow.length === 0) {
+                    container.innerHTML = this.getEmptyStateHTML();
+                    return;
+                }
+
+                const booksHTML = booksToShow.map(book => this.createBookCard(book)).join('');
+                container.innerHTML = booksHTML;
+                
+                // Add stagger animation
+                const cards = container.querySelectorAll('.book-card');
+                cards.forEach((card, index) => {
+                    card.style.animationDelay = `${index * 0.05}s`;
+                });
+            }
+
+            /**
+             * Create HTML for empty state
+             */
+            getEmptyStateHTML() {
+                const hasFilters = this.currentFilters.search || this.currentFilters.genre || this.currentFilters.status;
+                
+                if (hasFilters) {
+                    return `
+                        <div class="empty-state">
+                            <h3>🔍 No books match your filters</h3>
+                            <p>Try adjusting your search criteria or clearing the filters.</p>
+                            <button class="btn btn-primary" onclick="bookManager.clearFilters()">
+                                🗑️ Clear All Filters
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                return `
+                    <div class="empty-state">
+                        <h3>📚 Your library is empty</h3>
+                        <p>Start building your personal library by adding your first book!</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                            Use the form on the left to add books, or import your existing collection.
+                        </p>
+                    </div>
+                `;
+            }
+
+            /**
+             * Create HTML for individual book card
+             */
+            createBookCard(book) {
+                const rating = book.rating ? '⭐'.repeat(book.rating) : '';
+                const statusClass = `status-${book.status}`;
+                const statusText = this.getStatusText(book.status);
+                const statusEmoji = this.getStatusEmoji(book.status);
+                
+                // Format date
+                const dateAdded = new Date(book.dateAdded).toLocaleDateString();
+                
+                // Create tags HTML
+                const tagsHTML = book.tags && book.tags.length > 0 ? 
+                    `<div class="book-tags">
+                        ${book.tags.map(tag => `<span class="tag">${this.escapeHtml(tag)}</span>`).join('')}
+                    </div>` : '';
+                
+                // Create details HTML
+                const details = [];
+                if (book.genre) details.push(`<div class="book-detail"><strong>Genre:</strong> ${book.genre}</div>`);
+                if (book.pages) details.push(`<div class="book-detail"><strong>Pages:</strong> ${book.pages.toLocaleString()}</div>`);
+                if (book.publishyear) details.push(`<div class="book-detail"><strong>Year:</strong> ${book.publishyear}</div>`);
+                if (book.language) details.push(`<div class="book-detail"><strong>Language:</strong> ${book.language}</div>`);
+                
+                return `
+                    <div class="book-card" data-book-id="${book.id}">
+                        <div class="book-title">${this.escapeHtml(book.title)}</div>
+                        <div class="book-author">by ${this.escapeHtml(book.author)}</div>
+                        
+                        ${details.length > 0 ? `<div class="book-details">${details.join('')}</div>` : ''}
+                        
+                        <div class="book-meta">
+                            <span class="status-badge ${statusClass}">${statusEmoji} ${statusText}</span>
+                            <div class="rating-stars">${rating}</div>
+                        </div>
+                        
+                        ${tagsHTML}
+                        
+                        ${book.description ? `<div class="book-description">${this.escapeHtml(book.description)}</div>` : ''}
+                        
+                        <div style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 1rem;">
+                            Added: ${dateAdded}
+                        </div>
+                        
+                        <div class="book-actions">
+                            <button class="btn btn-primary" onclick="bookManager.editBook('${book.id}')" title="Edit book details">
+                                ✏️ Edit
+                            </button>
+                            <button class="btn btn-secondary" onclick="bookManager.toggleStatus('${book.id}')" title="Change reading status">
+                                ${this.getNextStatusText(book.status)}
+                            </button>
+                            <button class="btn btn-danger" onclick="bookManager.deleteBook('${book.id}')" title="Delete book">
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            /**
+             * Get display text for status
+             */
+            getStatusText(status) {
+                const statusMap = {
+                    'wishlist': 'Wishlist',
+                    'reading': 'Reading',
+                    'completed': 'Completed',
+                    'paused': 'On Hold'
+                };
+                return statusMap[status] || 'Unknown';
+            }
+
+            /**
+             * Get emoji for status
+             */
+            getStatusEmoji(status) {
+                const emojiMap = {
+                    'wishlist': '🔖',
+                    'reading': '📖',
+                    'completed': '✅',
+                    'paused': '⏸️'
+                };
+                return emojiMap[status] || '📚';
+            }
+
+            /**
+             * Get next status button text
+             */
+            getNextStatusText(currentStatus) {
+                const nextStatusMap = {
+                    'wishlist': '📖 Start Reading',
+                    'reading': '✅ Mark Complete',
+                    'completed': '📖 Read Again',
+                    'paused': '📖 Resume'
+                };
+                return nextStatusMap[currentStatus] || '📖 Start Reading';
+            }
+
+            /**
+             * Update statistics display
+             */
+            updateStats() {
+                const stats = {
+                    total: this.books.length,
+                    reading: this.books.filter(b => b.status === 'reading').length,
+                    completed: this.books.filter(b => b.status === 'completed').length,
+                    wishlist: this.books.filter(b => b.status === 'wishlist').length
+                };
+
+                // Animate counter updates
+                this.animateCounter('totalBooks', stats.total);
+                this.animateCounter('readingBooks', stats.reading);
+                this.animateCounter('completedBooks', stats.completed);
+                this.animateCounter('wishlistBooks', stats.wishlist);
+            }
+
+            /**
+             * Animate counter from current value to target
+             */
+            animateCounter(elementId, targetValue) {
+                const element = document.getElementById(elementId);
+                const currentValue = parseInt(element.textContent) || 0;
+                
+                if (currentValue === targetValue) return;
+                
+                const duration = 500;
+                const steps = 20;
+                const increment = (targetValue - currentValue) / steps;
+                const stepDuration = duration / steps;
+                
+                let currentStep =group">
+                        <label for="title">Book Title *</label>
+                        <input type="text" id="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="author">Author *</label>
+                        <input type="text" id="author" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre">
+                            <option value="">Select Genre</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Science Fiction</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Biography">Biography</option>
+                            <option value="History">History</option>
+                            <option value="Self-Help">Self-Help</option>
+                            <option value="Business">Business</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Philosophy">Philosophy</option>
+                        </select>
+                    </div>
